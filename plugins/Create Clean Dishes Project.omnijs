@@ -1,0 +1,39 @@
+/*{
+    "author": "Andy Schott",
+    "targets": ["omnifocus"],
+    "type": "action",
+    "identifier": "com.andyschott.Create Clean Dishes Project",
+    "version": "1.0",
+    "description": "A plug-in that creates a new project for cleaning dishes",
+    "label": "Create Clean Dishes Project",
+    "mediumLabel": "Create Clean Dishes Project",
+    "paletteLabel": "Create Clean Dishes Project",
+}*/
+(() => {
+    var action = new PlugIn.Action(function(selection) {
+        const misc = folderNamed('Misc');
+        const formatter = Formatter.Date.withStyle(Formatter.Date.Style.Short);
+
+        const cleanDishes = new Project('Clean Dishes', misc);
+        cleanDishes.sequential = true;
+        cleanDishes.completedByChildren = true;
+        cleanDishes.addTag(tagNamed('Home'));
+        
+        const loadDishWasher = new Task('Load and run the dishwasher');
+        loadDishWasher.deferDate = formatter.dateFromString('today @ 10pm');
+        loadDishWasher.dueDate = formatter.dateFromString('today @ 11pm');
+
+        const unloadDishWasher = new Task('Unload the dishwasher');
+        unloadDishWasher.deferDate = formatter.dateFromString('tomorrow @ 8am');
+        unloadDishWasher.dueDate = formatter.dateFromString('tomorrow @ 11pm');
+        
+        moveTasks([loadDishWasher, unloadDishWasher], cleanDishes);
+    });
+
+    // If needed, uncomment, and add a function that returns true if the current selection is appropriate for the action.
+    action.validate = function(selection){
+    	return true;
+    };
+        
+    return action;
+})();
